@@ -49,6 +49,21 @@ const appendProduct = async () => {
   });
 };
 
+const addToCart = async (event) => {
+  const item = event.target;
+  const productId = getSkuFromProductItem(item.parentNode);
+  const data = await fetchItem(productId);
+
+  const { id, title, price } = data;
+  const cartItem = document.querySelector('.cart__items');
+  cartItem.appendChild(createCartItemElement({ sku: id, name: title, salePrice: price }));
+
+  return console.log(data);
+};
+
 window.onload = async () => {
   await appendProduct();
+
+  document.querySelectorAll('.item__add')
+  .forEach((value) => value.addEventListener('click', addToCart));
 };
