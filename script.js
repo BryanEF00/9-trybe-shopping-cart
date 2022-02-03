@@ -40,6 +40,8 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
+const cartItem = document.querySelector('.cart__items');
+
 const appendProduct = async () => {
   const section = document.querySelector('.items');
   const data = await fetchProducts('computador');
@@ -55,13 +57,29 @@ const addToCart = async (event) => {
   const data = await fetchItem(productId);
 
   const { id, title, price } = data;
-  const cartItem = document.querySelector('.cart__items');
+  
   cartItem.appendChild(createCartItemElement({ sku: id, name: title, salePrice: price }));
+
+  const list = document.querySelector('.cart__items').innerHTML;
+
+  /* Referência de como salvar o InnerHTML em JSON: https://stackoverflow.com/questions/53641447/how-to-store-a-list-in-localstorage */
+  localStorage.clear();
+  saveCartItems(JSON.stringify(list));
+};
+
+const addCartBtn = () =>
+  document.querySelectorAll('.item__add')
+  .forEach((value) => value.addEventListener('click', addToCart));
+
+const loadData = () => {
+  cartItem.innerHTML = JSON.parse(getSavedCartItems());
+  document.querySelectorAll('li')
+  .forEach((value) => value.addEventListener('click', cartItemClickListener));
 };
 
 window.onload = async () => {
   await appendProduct();
-
-  document.querySelectorAll('.item__add')
-  .forEach((value) => value.addEventListener('click', addToCart));
+  addCartBtn();
+  getSavedCartItems();
+  loadData();
 };
