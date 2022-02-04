@@ -4,6 +4,8 @@
 
 const cartItem = document.querySelector('.cart__items');
 const itemPrice = document.querySelector('.total-price');
+const emptyCartBtn = document.querySelector('.empty-cart');
+const defaultValue = 0;
 
 const isFloat = (value) => {
   if (parseInt(value, 10) !== parseFloat(value)) {
@@ -50,7 +52,7 @@ function cartItemClickListener(event) {
   const removePrice = event.target.innerText.split('$', 2);
 
   const sum = parseFloat(itemPrice.innerText);
-  const totalPrice = (sum - parseFloat(removePrice[1]));
+  const totalPrice = sum - parseFloat(removePrice[1]);
 
   itemPrice.innerText = totalPrice;
   saveCartValue(totalPrice);
@@ -82,8 +84,8 @@ const appendProduct = async () => {
 
 const cartTotalPrice = (price) => {
   const sum = parseFloat(itemPrice.innerText);
-  const totalPrice = (sum + price);
-  const verifyValue = isFloat(totalPrice) ? totalPrice : parseInt(totalPrice, 10); 
+  const totalPrice = sum + price;
+  const verifyValue = isFloat(totalPrice) ? totalPrice : parseInt(totalPrice, 10);
 
   itemPrice.innerText = verifyValue;
 
@@ -118,11 +120,25 @@ const loadData = () => {
 };
 
 const loadCartValue = () => {
-  const defaultValue = 0;
-
-  if (localStorage.getItem('cartValue')) itemPrice.innerHTML = (localStorage.getItem('cartValue'));
-  if (parseFloat(localStorage.getItem('cartValue')) === 0) itemPrice.innerHTML = defaultValue.toFixed(2);
+  if (localStorage.getItem('cartValue')) itemPrice.innerHTML = localStorage.getItem('cartValue');
+  if (parseFloat(localStorage.getItem('cartValue')) === 0) {
+    itemPrice.innerHTML = defaultValue.toFixed(2);
+  }
 };
+
+const clearCart = () => {
+  const cartLi = cartItem.children;
+
+  if (cartLi.length > 0) {
+    document.querySelectorAll('li').forEach((value) => value.remove());
+
+    localStorage.clear();
+
+    itemPrice.innerText = defaultValue.toFixed(2);
+  }
+};
+
+emptyCartBtn.addEventListener('click', clearCart);
 
 window.onload = async () => {
   await appendProduct();
