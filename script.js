@@ -1,3 +1,17 @@
+/* Referência de como salvar o InnerHTML em JSON: https://stackoverflow.com/questions/53641447/how-to-store-a-list-in-localstorage */
+
+/* Referência para verificar se o número é Float: https://www.horadecodar.com.br/2021/01/20/como-verificar-se-um-numero-e-decimal-em-javascript/ */
+
+const cartItem = document.querySelector('.cart__items');
+const itemPrice = document.querySelector('.total-price');
+
+const isFloat = (value) => {
+  if (parseInt(value, 10) !== parseFloat(value)) {
+    return true;
+  }
+  return false;
+};
+
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -28,8 +42,25 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
+const saveCartValue = (value) => {
+  localStorage.setItem('cartValue', value);
+};
+
 function cartItemClickListener(event) {
+  const removePrice = event.target.innerText.split('$', 2);
+
+  const sum = parseFloat(itemPrice.innerText);
+  const totalPrice = (sum - parseFloat(removePrice[1]));
+
+  itemPrice.innerText = totalPrice;
+  saveCartValue(totalPrice);
+
   event.target.remove();
+
+  const list = cartItem.innerHTML;
+
+  localStorage.removeItem('cartItems');
+  saveCartItems(JSON.stringify(list));
 }
 
 function createCartItemElement({ sku, name, salePrice }) {
@@ -40,8 +71,6 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
-const cartItem = document.querySelector('.cart__items');
-
 const appendProduct = async () => {
   const section = document.querySelector('.items');
   const data = await fetchProducts('computador');
@@ -51,19 +80,30 @@ const appendProduct = async () => {
   });
 };
 
+const cartTotalPrice = (price) => {
+  const sum = parseFloat(itemPrice.innerText);
+  const totalPrice = (sum + price);
+  const verifyValue = isFloat(totalPrice) ? totalPrice : parseInt(totalPrice, 10); 
+
+  itemPrice.innerText = verifyValue;
+
+  saveCartValue(verifyValue);
+};
+
 const addToCart = async (event) => {
   const item = event.target;
   const productId = getSkuFromProductItem(item.parentNode);
   const data = await fetchItem(productId);
 
   const { id, title, price } = data;
-  
+
   cartItem.appendChild(createCartItemElement({ sku: id, name: title, salePrice: price }));
+
+  cartTotalPrice(price);
 
   const list = document.querySelector('.cart__items').innerHTML;
 
-  /* Referência de como salvar o InnerHTML em JSON: https://stackoverflow.com/questions/53641447/how-to-store-a-list-in-localstorage */
-  localStorage.clear();
+  localStorage.removeItem('cartItems');
   saveCartItems(JSON.stringify(list));
 };
 
@@ -77,9 +117,17 @@ const loadData = () => {
   .forEach((value) => value.addEventListener('click', cartItemClickListener));
 };
 
+const loadCartValue = () => {
+  const defaultValue = 0;
+
+  if (localStorage.getItem('cartValue')) itemPrice.innerHTML = (localStorage.getItem('cartValue'));
+  if (parseFloat(localStorage.getItem('cartValue')) === 0) itemPrice.innerHTML = defaultValue.toFixed(2);
+};
+
 window.onload = async () => {
   await appendProduct();
   addCartBtn();
   getSavedCartItems();
   loadData();
+  loadCartValue();
 };
