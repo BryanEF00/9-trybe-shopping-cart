@@ -154,3 +154,27 @@ body {
   margin-top: 10%;
   margin-bottom: 5%;
 }
+
+.loading {
+  margin: auto;
+  font-size: 1.5rem;
+}
+
+/* Referência: https://blog.hubspot.com/website/css-loading-animation */
+.loadingImg {
+  margin: auto;
+  margin-top: 10%;
+  border: 5px solid rgb(234, 240, 246);
+  border-radius: 50%;
+  border-top: 5px solid blue;
+  width: 50px;
+  height: 50px;
+  animation: spinner 4s linear infinite;
+}
+
+@keyframes spinner {
+
+  0% { transform: rotate(0deg); }
+
+  100% { transform: rotate(360deg); }
+}

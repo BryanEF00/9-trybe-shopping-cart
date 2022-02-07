@@ -80,6 +80,7 @@ const appendProduct = async () => {
     const { id, title, thumbnail } = item;
     section.appendChild(createProductItemElement({ sku: id, name: title, image: thumbnail }));
   });
+  removeLoading();
 };
 
 const cartTotalPrice = (price) => {
@@ -140,7 +141,26 @@ const clearCart = () => {
 
 emptyCartBtn.addEventListener('click', clearCart);
 
+const loadingScreen = () => {
+  const bodyItems = document.querySelector('.items');
+  const loading = document.createElement('div');
+  loading.classList.add('loading');
+  loading.innerText = 'carregando...';
+  const loadingImg = document.createElement('div');
+  loadingImg.classList.add('loadingImg');
+  
+  bodyItems.appendChild(loading);
+  loading.appendChild(loadingImg);
+};
+
+const removeLoading = () => {
+  const loadingMsg = document.querySelector('.loading');
+
+  loadingMsg.remove();
+};
+
 window.onload = async () => {
+  loadingScreen();
   await appendProduct();
   addCartBtn();
   getSavedCartItems();
