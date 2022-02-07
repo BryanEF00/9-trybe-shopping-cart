@@ -73,6 +73,12 @@ function createCartItemElement({ sku, name, salePrice }) {
   return li;
 }
 
+const removeLoading = () => {
+  const loadingMsg = document.querySelector('.loading');
+
+  loadingMsg.remove();
+};
+
 const appendProduct = async () => {
   const section = document.querySelector('.items');
   const data = await fetchProducts('computador');
@@ -151,12 +157,6 @@ const loadingScreen = () => {
   
   bodyItems.appendChild(loading);
   loading.appendChild(loadingImg);
-};
-
-const removeLoading = () => {
-  const loadingMsg = document.querySelector('.loading');
-
-  loadingMsg.remove();
 };
 
 window.onload = async () => {
